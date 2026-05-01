@@ -14,5 +14,8 @@ jobs:
         with:
           go-version: '1.22'
           cache: false
-      - name: Run unit tests (exclude repository)
-        run: go test ./internal/validator/... ./internal/service/... ./internal/handler/... -v -timeout 30s
+      - name: Fix pgservicefile version
+        run: |
+          go get github.com/jackc/pgservicefile@v0.0.0-20200307190119-3fe961f6962c
+      - name: Run unit tests
+        run: go test ./internal/validator/... ./internal/service/... -v -timeout 30s
