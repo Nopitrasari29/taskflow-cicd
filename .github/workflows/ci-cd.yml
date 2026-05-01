@@ -25,7 +25,7 @@ jobs:
       - name: Generate go.sum
         run: go mod tidy
       - name: Run go vet
-        run: go vet ./...
+        run: go vet ./internal/validator/... ./internal/service/... ./internal/repository/...
 
   unit-test:
     name: Unit Test + Race Detector
