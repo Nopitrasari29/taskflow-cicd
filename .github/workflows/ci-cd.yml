@@ -14,6 +14,7 @@ jobs:
         with:
           go-version: '1.22'
           cache: false
-      - name: Run validator tests
-        run: go test ./internal/validator/... -v
-        
+      - name: Run go mod tidy
+        run: go mod tidy
+      - name: Run all tests
+        run: go test ./... -v
