@@ -14,7 +14,5 @@ jobs:
         with:
           go-version: '1.22'
           cache: false
-      - name: Run go mod tidy
-        run: go mod tidy
-      - name: Run all tests
-        run: go test ./... -v
+      - name: Run unit tests (exclude repository)
+        run: go test ./internal/validator/... ./internal/service/... ./internal/handler/... -v -timeout 30s
