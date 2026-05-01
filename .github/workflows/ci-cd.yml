@@ -14,8 +14,9 @@ jobs:
         with:
           go-version: '1.22'
           cache: false
-      - name: Fix pgservicefile version
+      - name: Fix go.mod dan generate go.sum
         run: |
-          go get github.com/jackc/pgservicefile@v0.0.0-20200307190119-3fe961f6962c
+          sed -i 's|github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d787f4|github.com/jackc/pgservicefile v0.0.0-20200307190119-3fe961f6962c|g' go.mod
+          go mod tidy
       - name: Run unit tests
         run: go test ./internal/validator/... ./internal/service/... -v -timeout 30s
