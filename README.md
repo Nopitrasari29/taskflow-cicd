@@ -70,7 +70,8 @@ push/PR ke main atau develop
         [notify]
     ✅ Telegram + Slack (sukses/gagal)
 ```
-![alt text](image.png)
+<img width="559" height="517" alt="image" src="https://github.com/user-attachments/assets/fb139ef9-9f2b-4d39-a26f-7f6a7969bced" />
+
 ---
 
 ## 🛠️ Tech Stack
