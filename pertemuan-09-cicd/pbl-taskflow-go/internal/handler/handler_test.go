@@ -17,7 +17,7 @@ import (
 
 func newServer(t *testing.T) *httptest.Server {
 	t.Helper()
-	repo := repository.NewTaskRepository()
+	repo := repository.NewMemoryRepository()
 	svc := service.NewTaskService(repo)
 	h := handler.New(svc)
 	mux := http.NewServeMux()
@@ -361,3 +361,80 @@ func contains(s, substr string) bool {
 // - TestUpdateTask_TitleOnly (update hanya title tanpa ubah status)
 // - TestStats_ConsistencyWithTaskList (total di /stats == total di /tasks)
 // - TestCreateMultipleTasks_UniqueIDs (50 task, semua ID unik)
+
+// ── Test Case Baru 1 — Filter Task Berdasarkan Status ────────────────────────
+// Memverifikasi bahwa GET /api/v1/tasks?status=done hanya mengembalikan
+// task dengan status "done", bukan semua task.
+func TestListTasks_WithStatusFilter(t *testing.T) {
+	srv := newServer(t)
+	defer srv.Close()
+
+	// Buat 1 task todo
+	doRequest(t, srv, http.MethodPost, "/api/v1/tasks",
+		map[string]string{"title": "Task Todo"})
+
+	// Buat task done pertama
+	resp1 := doRequest(t, srv, http.MethodPost, "/api/v1/tasks",
+		map[string]string{"title": "Task Done 1"})
+	var task1 model.Task
+	decodeBody(t, resp1, &task1)
+	doRequest(t, srv, http.MethodPut, "/api/v1/tasks/"+task1.ID,
+		map[string]string{"status": "done"})
+
+	// Buat task done kedua
+	resp2 := doRequest(t, srv, http.MethodPost, "/api/v1/tasks",
+		map[string]string{"title": "Task Done 2"})
+	var task2 model.Task
+	decodeBody(t, resp2, &task2)
+	doRequest(t, srv, http.MethodPut, "/api/v1/tasks/"+task2.ID,
+		map[string]string{"status": "done"})
+
+	// Filter ?status=done harusnya return tepat 2 task
+	filterResp := doRequest(t, srv, http.MethodGet, "/api/v1/tasks?status=done", nil)
+	if filterResp.StatusCode != http.StatusOK {
+		t.Fatalf("filter status = %d, want 200", filterResp.StatusCode)
+	}
+	var tasks []model.Task
+	decodeBody(t, filterResp, &tasks)
+	if len(tasks) != 2 {
+		t.Errorf("filter done = %d task, want 2 — filter status tidak berfungsi dengan benar", len(tasks))
+	}
+	// Pastikan semua task yang dikembalikan benar-benar berstatus done
+	for _, task := range tasks {
+		if task.Status != model.StatusDone {
+			t.Errorf("task %q berstatus %q, bukan done", task.ID, task.Status)
+		}
+	}
+}
+
+// ── Test Case Baru 2 — Update Hanya Title Tanpa Ubah Status ──────────────────
+// Memverifikasi bahwa update partial (hanya title) tidak mengubah field lain
+// seperti status — penting untuk memastikan PATCH-like behavior berjalan benar.
+func TestUpdateTask_TitleOnly(t *testing.T) {
+	srv := newServer(t)
+	defer srv.Close()
+
+	// Buat task dengan title awal
+	resp := doRequest(t, srv, http.MethodPost, "/api/v1/tasks",
+		map[string]string{"title": "Judul Lama"})
+	var task model.Task
+	decodeBody(t, resp, &task)
+
+	// Update hanya title, tanpa menyertakan field status
+	upResp := doRequest(t, srv, http.MethodPut, "/api/v1/tasks/"+task.ID,
+		map[string]string{"title": "Judul Baru"})
+	if upResp.StatusCode != http.StatusOK {
+		t.Fatalf("update status = %d, want 200", upResp.StatusCode)
+	}
+	var updated model.Task
+	decodeBody(t, upResp, &updated)
+
+	// Title harus berubah
+	if updated.Title != "Judul Baru" {
+		t.Errorf("title = %q, want 'Judul Baru'", updated.Title)
+	}
+	// Status harus tetap todo — tidak boleh berubah karena tidak di-update
+	if updated.Status != model.StatusTodo {
+		t.Errorf("status berubah jadi %q padahal tidak di-update, harusnya tetap todo", updated.Status)
+	}
+}
