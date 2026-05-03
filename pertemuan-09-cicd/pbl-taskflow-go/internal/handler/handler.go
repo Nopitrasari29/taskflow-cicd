@@ -54,11 +54,7 @@ func (h *Handler) ListTasks(w http.ResponseWriter, r *http.Request) {
 	if tasks == nil {
 		tasks = []model.Task{}
 	}
-	writeJSON(w, http.StatusOK, model.TaskListResponse{
-		Tasks:          tasks,
-		Total:          len(tasks),
-		CompletionRate: service.CalculateCompletionRate(tasks),
-	})
+	writeJSON(w, http.StatusOK, tasks)
 }
 
 func (h *Handler) CreateTask(w http.ResponseWriter, r *http.Request) {
