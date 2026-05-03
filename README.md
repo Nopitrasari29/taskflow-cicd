@@ -200,9 +200,9 @@ taskflow-cicd/
 - [x] 5 job CI pipeline selesai (lint, unit-test, integration-test, coverage-gate, build-binary)
 
 ### 🔄 Area 2 — Docker + GHCR (Rafika)
-- [ ] Dockerfile multi-stage verified
-- [ ] Image push ke GHCR dengan tag SHA
-- [ ] Perbandingan ukuran image terdokumentasi
+- [x] Dockerfile multi-stage verified
+- [x] Image push ke GHCR dengan tag SHA
+- [x] Perbandingan ukuran image terdokumentasi
 
 ### 🔄 Area 3 — Smoke Test + Rollback (Nisrina)
 - [ ] Job smoke-test selesai
