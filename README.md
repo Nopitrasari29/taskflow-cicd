@@ -199,16 +199,16 @@ taskflow-cicd/
 - [x] Coverage ≥ 75% (Coverage Gate PASS)
 - [x] 5 job CI pipeline selesai (lint, unit-test, integration-test, coverage-gate, build-binary)
 
-### 🔄 Area 2 — Docker + GHCR (Rafika)
+### ✅ Area 2 — Docker + GHCR (Rafika)
 - [x] Dockerfile multi-stage verified
 - [x] Image push ke GHCR dengan tag SHA
 - [x] Perbandingan ukuran image terdokumentasi
 
-### 🔄 Area 3 — Smoke Test + Rollback (Nisrina)
-- [ ] Job smoke-test selesai
-- [ ] Notifikasi Telegram + Slack sukses & gagal
-- [ ] `make rollback` berfungsi
-- [ ] Prosedur rollback terdokumentasi
+### ✅ Area 3 — Smoke Test + Rollback (Nisrina)
+- [x] Job smoke-test selesai
+- [x] Notifikasi Telegram + Slack sukses & gagal
+- [x] `make rollback` berfungsi
+- [x] Prosedur rollback terdokumentasi
 
 ### 🔄 Area 4 — Security + Laporan (Riskiyatul)
 - [ ] gosec (SAST) diintegrasikan ke pipeline
