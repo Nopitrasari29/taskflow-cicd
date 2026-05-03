@@ -237,7 +237,10 @@ jobs:
       - name: Wait server ready
         run: |
           for i in {1..10}; do
-            curl -sf http://localhost:8080/health && break && echo "Server ready!" && exit 0
+            if curl -sf http://localhost:8080/health; then
+              echo "Server ready!"
+              exit 0
+            fi
             echo "Waiting..."
             sleep 3
           done
