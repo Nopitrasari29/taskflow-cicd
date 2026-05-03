@@ -231,12 +231,18 @@ jobs:
           docker run -d --name taskflow-api -p 8080:8080 \
           ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }}
 
+      - name: Check container logs
+        run: docker logs taskflow-api
+
       - name: Wait server ready
         run: |
           for i in {1..10}; do
-            curl -sf http://localhost:8080/health && break
+            curl -sf http://localhost:8080/health && break && echo "Server ready!" && exit 0
+            echo "Waiting..."
             sleep 3
           done
+          echo "Server not ready"
+          exit 1
 
       - name: Test /health
         run: curl -f http://localhost:8080/health
