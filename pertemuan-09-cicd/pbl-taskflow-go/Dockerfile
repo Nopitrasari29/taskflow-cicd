@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build \
     -ldflags="-w -s" \
     -o taskflow-api \
-    ./cmd/server
+    ./cmd/server/main.go
 
 # ── Stage 2: Runtime (scratch — image ~8MB) ───────────────────────────────────
 FROM scratch
