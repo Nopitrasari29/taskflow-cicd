@@ -188,13 +188,19 @@ jobs:
           SHA_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
           echo "sha-tag=$SHA_TAG" >> $GITHUB_OUTPUT
 
+      # 🔥 FIX LOWERCASE DI SINI
+      - name: Set lowercase repo
+        id: repo
+        run: |
+          echo "repo=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/taskflow-api:${{ steps.meta.outputs.sha-tag }} .
+          docker build -t ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ steps.meta.outputs.sha-tag }} .
 
       - name: Show Image Size
         run: docker images | grep taskflow-api
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}/taskflow-api:${{ steps.meta.outputs.sha-tag }}
+          docker push ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ steps.meta.outputs.sha-tag }}
