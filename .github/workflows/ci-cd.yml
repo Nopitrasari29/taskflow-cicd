@@ -218,13 +218,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set lowercase repo
+        id: repo
+        run: |
+          echo "repo=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Pull image
-        run: docker pull ghcr.io/${{ github.repository }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }}
+        run: docker pull ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }}
 
       - name: Run container
         run: |
           docker run -d --name taskflow-api -p 8080:8080 \
-          ghcr.io/${{ github.repository }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }}
+          ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }}
 
       - name: Wait server ready
         run: |
@@ -242,6 +247,6 @@ jobs:
       - name: Update stable tag
         run: |
           docker tag \
-          ghcr.io/${{ github.repository }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }} \
-          ghcr.io/${{ github.repository }}/taskflow-api:stable
-          docker push ghcr.io/${{ github.repository }}/taskflow-api:stable
+          ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:${{ needs.docker-build-push.outputs.sha-tag }} \
+          ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:stable
+          docker push ghcr.io/${{ steps.repo.outputs.repo }}/taskflow-api:stable
