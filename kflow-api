@@ -1,0 +1,34 @@
+[33m835c87f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m fix  simulate failure
+[33mafce345[m test: simulate failure
+[33mf7809b2[m add telegram notification
+[33m2afce4d[m add smoke test
+[33ma343faa[m add smoke test
+[33m507a4e7[m add smoke test
+[33mf343375[m fix: improve smoke test stability
+[33md25c88c[m fixx: add smoke test job
+[33m43b3849[m fix: add smoke test job
+[33m5f47aa0[m add smoke test
+[33maa529fa[m Update README.md
+[33m780658f[m fix: ghcr lowercase issue
+[33m6b423b1[m feat: add docker build & push pipeline
+[33m282ab98[m fix: NewMemoryRepository + tambah 2 test case handler_test.go
+[33m535cd61[m fix: generate go.sum yang valid
+[33ma2b2369[m Update README.md
+[33m5433c7d[m docs: tambah README kelompok
+[33mf3cf9d0[m fix: bug #2 postgres.go + fix integration test scope
+[33m2aaf87c[m ci: batasi go vet ke package tanpa pgx dependency
+[33m499c648[m ci: tambah go mod tidy di semua job
+[33me74951d[m ci: upgrade ke 5 job proper dengan race detector dan coverage gate
+[33ma5cd2aa[m test: tambah TestSave_UpdateExisting dan TestCount_AfterDelete
+[33m6bf2c9c[m ci: tambah repository test untuk verifikasi bug #2
+[33m7e73507[m ci: fix go.mod via sed sebelum mod tidy
+[33md3b842c[m ci: test specific packages exclude repository
+[33mfc8bf2c[m ci: test specific packages exclude repository
+[33mb7f5800[m fix: pgservicefile hash + restore full test workflow
+[33m2b26830[m ci: test validator only sementara
+[33m7bc41eb[m fix: downgrade pgx ke v5.5.4 yg punya pgservicefile stabil
+[33mbf128cf[m ci: fix working directory dan disable cache
+[33m7696553[m ci: add github actions workflow
+[33me9e0918[m ci: trigger workflow
+[33ma2f14b5[m fix: perbaiki 3 bug dan tambah CI workflow
+[33m28de02b[m week 9

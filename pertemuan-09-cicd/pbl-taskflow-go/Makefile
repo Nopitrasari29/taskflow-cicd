@@ -1,7 +1,7 @@
 # Makefile — TaskFlow API
 BINARY   = bin/taskflow-api
 IMAGE    = taskflow-api
-REGISTRY ?= ghcr.io/your-username
+REGISTRY ?= ghcr.io/nopitrasari29/taskflow-cicd
 VERSION  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "dev")
 DB_URL   ?= postgres://taskflow:taskflow_secret@localhost:5432/taskflow?sslmode=disable
 
@@ -70,7 +70,9 @@ rollback:
 	@echo "→ Rolling back ke $(REGISTRY)/$(IMAGE):$(ROLLBACK_TAG)"
 	docker pull $(REGISTRY)/$(IMAGE):$(ROLLBACK_TAG)
 	docker stop taskflow-api 2>/dev/null || true
-	docker run -d --rm \
+	docker rm taskflow-api 2>/dev/null || true
+
+	docker run -d \
 	  --name taskflow-api \
 	  -p 8080:8080 \
 	  -e DATABASE_URL=$(DB_URL) \
