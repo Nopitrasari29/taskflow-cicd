@@ -215,3 +215,5 @@ taskflow-cicd/
 - [ ] gitleaks (Secret Scanning) diintegrasikan
 - [ ] Laporan security per kategori
 - [ ] Laporan keseluruhan selesai
+
+Laporan Gdocs : https://docs.google.com/document/d/1RHXwDBQuWt3LZxeZRHszRTb-pJBx9s90OlTKZXWZyyQ/edit?usp=sharing 
