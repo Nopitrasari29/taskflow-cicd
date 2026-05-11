@@ -22,8 +22,7 @@ func saveTask(t *testing.T, r *repository.MemoryRepository, id, title string, s 
 	return task
 }
 
-// ── [BUG] FindByStatus ───────────────────────────────────────────────────────
-// BUG #2: filter menggunakan != → mengembalikan hasil TERBALIK.
+// ── FindByStatus ───────────────────────────────────────────────────────
 
 func TestFindByStatus_HanyaTodo(t *testing.T) {
 	r := newRepo(t)
@@ -35,13 +34,12 @@ func TestFindByStatus_HanyaTodo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FindByStatus error: %v", err)
 	}
-	// [BUG] mengembalikan 1 (Done C), bukan 2 (Todo A & B)
+	
+	// Ekspektasi: Harus mengembalikan 2 task (Todo A & Todo B)
 	if len(got) != 2 {
-		t.Errorf("BUG TERDETEKSI — FindByStatus(todo) = %d task, want 2\n"+
-			"  Kondisi != mengembalikan task yang BUKAN todo\n"+
-			"  Perbaiki: ubah != menjadi == di memory.go", len(got))
-		return
+		t.Errorf("FindByStatus(todo) = %d task, want 2", len(got))
 	}
+	
 	for _, task := range got {
 		if task.Status != model.StatusTodo {
 			t.Errorf("FindByStatus(todo) mengembalikan status %q", task.Status)
@@ -60,9 +58,10 @@ func TestFindByStatus_HanyaDone(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FindByStatus error: %v", err)
 	}
-	// [BUG] mengembalikan 2 (Todo+InProgress), bukan 2 Done
+	
+	// Ekspektasi: Harus mengembalikan 2 task (Done)
 	if len(got) != 2 {
-		t.Errorf("BUG — FindByStatus(done) = %d, want 2", len(got))
+		t.Errorf("FindByStatus(done) = %d, want 2", len(got))
 	}
 }
 
@@ -74,9 +73,10 @@ func TestFindByStatus_KosongJikaStatusTidakAda(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error: %v", err)
 	}
-	// [BUG] mengembalikan 1 (Todo), bukan 0
+	
+	// Ekspektasi: Harus mengembalikan 0 task karena tidak ada yang Done
 	if len(got) != 0 {
-		t.Errorf("BUG — FindByStatus(done) saat hanya ada todo = %d, want 0", len(got))
+		t.Errorf("FindByStatus(done) saat hanya ada todo = %d, want 0", len(got))
 	}
 }
 
