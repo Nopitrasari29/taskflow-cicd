@@ -337,9 +337,184 @@ func TestDelete_AndVerifyStats(t *testing.T) {
 	}
 }
 
-// ── [TODO] Tambahkan test berikut ─────────────────────────────────────────────
-// TODO mahasiswa:
-// - TestGetAll_WithStatusFilter (setelah bug #2 diperbaiki)
-// - TestGetStats_CompletionRate (setelah bug #1 diperbaiki)
-// - TestCreate_WithUnicodeTitle
-// - TestDelete_AndVerifyStats
+// ── TestGetAll_WithStatusFilter ─────────────────────────────────────────────
+
+func TestGetAll_WithStatusFilter(t *testing.T) {
+	svc := newSvc()
+
+	// Buat task dengan berbagai status
+	task1, _ := svc.Create(model.CreateTaskRequest{Title: "Task Todo 1"})
+	task2, _ := svc.Create(model.CreateTaskRequest{Title: "Task Todo 2"})
+	task3, _ := svc.Create(model.CreateTaskRequest{Title: "Task In Progress"})
+	task4, _ := svc.Create(model.CreateTaskRequest{Title: "Task Done"})
+
+	// Update status task3 ke in_progress
+	sIP := model.StatusInProgress
+	svc.Update(task3.ID, model.UpdateTaskRequest{Status: &sIP}) //nolint
+
+	// Update status task4 ke done
+	sDone := model.StatusDone
+	svc.Update(task4.ID, model.UpdateTaskRequest{Status: &sDone}) //nolint
+
+	// Pastikan task1 dan task2 tetap di todo (tidak diubah)
+	_ = task1
+	_ = task2
+
+	t.Run("filter todo → 2 task", func(t *testing.T) {
+		tasks, err := svc.GetAll("todo")
+		if err != nil {
+			t.Fatalf("GetAll(todo) error = %v", err)
+		}
+		if len(tasks) != 2 {
+			t.Errorf("GetAll(todo) = %d task, want 2", len(tasks))
+		}
+		for _, task := range tasks {
+			if task.Status != model.StatusTodo {
+				t.Errorf("GetAll(todo) mengembalikan status %q, want todo", task.Status)
+			}
+		}
+	})
+
+	t.Run("filter in_progress → 1 task", func(t *testing.T) {
+		tasks, err := svc.GetAll("in_progress")
+		if err != nil {
+			t.Fatalf("GetAll(in_progress) error = %v", err)
+		}
+		if len(tasks) != 1 {
+			t.Errorf("GetAll(in_progress) = %d task, want 1", len(tasks))
+		}
+		if len(tasks) > 0 && tasks[0].Status != model.StatusInProgress {
+			t.Errorf("GetAll(in_progress) mengembalikan status %q", tasks[0].Status)
+		}
+	})
+
+	t.Run("filter done → 1 task", func(t *testing.T) {
+		tasks, err := svc.GetAll("done")
+		if err != nil {
+			t.Fatalf("GetAll(done) error = %v", err)
+		}
+		if len(tasks) != 1 {
+			t.Errorf("GetAll(done) = %d task, want 1", len(tasks))
+		}
+		if len(tasks) > 0 && tasks[0].Status != model.StatusDone {
+			t.Errorf("GetAll(done) mengembalikan status %q", tasks[0].Status)
+		}
+	})
+
+	t.Run("filter kosong → semua task (4)", func(t *testing.T) {
+		tasks, err := svc.GetAll("")
+		if err != nil {
+			t.Fatalf("GetAll('') error = %v", err)
+		}
+		if len(tasks) != 4 {
+			t.Errorf("GetAll('') = %d task, want 4", len(tasks))
+		}
+	})
+
+	t.Run("filter invalid → error", func(t *testing.T) {
+		_, err := svc.GetAll("cancelled")
+		if err == nil {
+			t.Error("GetAll('cancelled') harus error untuk status tidak valid")
+		}
+	})
+}
+
+// ── TestGetStats_CompletionRate ─────────────────────────────────────────────
+
+func TestGetStats_CompletionRate(t *testing.T) {
+	t.Run("0% — tidak ada task done", func(t *testing.T) {
+		svc := newSvc()
+		svc.Create(model.CreateTaskRequest{Title: "T1"}) //nolint
+		svc.Create(model.CreateTaskRequest{Title: "T2"}) //nolint
+
+		stats, err := svc.GetStats()
+		if err != nil {
+			t.Fatalf("GetStats() error = %v", err)
+		}
+		if stats.CompletionRate != 0 {
+			t.Errorf("CompletionRate = %.2f, want 0.00", stats.CompletionRate)
+		}
+	})
+
+	t.Run("50% — setengah task done", func(t *testing.T) {
+		svc := newSvc()
+		task1, _ := svc.Create(model.CreateTaskRequest{Title: "T1"})
+		svc.Create(model.CreateTaskRequest{Title: "T2"}) //nolint
+
+		done := model.StatusDone
+		svc.Update(task1.ID, model.UpdateTaskRequest{Status: &done}) //nolint
+
+		stats, err := svc.GetStats()
+		if err != nil {
+			t.Fatalf("GetStats() error = %v", err)
+		}
+		diff := stats.CompletionRate - 50.0
+		if diff < 0 {
+			diff = -diff
+		}
+		if diff > 0.01 {
+			t.Errorf("CompletionRate = %.2f, want 50.00", stats.CompletionRate)
+		}
+	})
+
+	t.Run("33.33% — sepertiga task done", func(t *testing.T) {
+		svc := newSvc()
+		task1, _ := svc.Create(model.CreateTaskRequest{Title: "T1"})
+		svc.Create(model.CreateTaskRequest{Title: "T2"}) //nolint
+		svc.Create(model.CreateTaskRequest{Title: "T3"}) //nolint
+
+		done := model.StatusDone
+		svc.Update(task1.ID, model.UpdateTaskRequest{Status: &done}) //nolint
+
+		stats, err := svc.GetStats()
+		if err != nil {
+			t.Fatalf("GetStats() error = %v", err)
+		}
+		diff := stats.CompletionRate - 33.33
+		if diff < 0 {
+			diff = -diff
+		}
+		if diff > 0.01 {
+			t.Errorf("CompletionRate = %.2f, want 33.33", stats.CompletionRate)
+		}
+	})
+
+	t.Run("100% — semua task done", func(t *testing.T) {
+		svc := newSvc()
+		task1, _ := svc.Create(model.CreateTaskRequest{Title: "T1"})
+		task2, _ := svc.Create(model.CreateTaskRequest{Title: "T2"})
+
+		done := model.StatusDone
+		svc.Update(task1.ID, model.UpdateTaskRequest{Status: &done}) //nolint
+		svc.Update(task2.ID, model.UpdateTaskRequest{Status: &done}) //nolint
+
+		stats, err := svc.GetStats()
+		if err != nil {
+			t.Fatalf("GetStats() error = %v", err)
+		}
+		if stats.CompletionRate != 100.0 {
+			t.Errorf("CompletionRate = %.2f, want 100.00", stats.CompletionRate)
+		}
+	})
+
+	t.Run("0% — tidak ada task sama sekali", func(t *testing.T) {
+		svc := newSvc()
+
+		stats, err := svc.GetStats()
+		if err != nil {
+			t.Fatalf("GetStats() error = %v", err)
+		}
+		if stats.CompletionRate != 0 {
+			t.Errorf("CompletionRate = %.2f, want 0.00", stats.CompletionRate)
+		}
+		if stats.Total != 0 {
+			t.Errorf("Total = %d, want 0", stats.Total)
+		}
+	})
+}
+
+// ── [TODO] Semua test sudah diimplementasikan ─────────────────────────────────
+// ✅ TestGetAll_WithStatusFilter
+// ✅ TestGetStats_CompletionRate
+// ✅ TestCreate_WithUnicodeTitle
+// ✅ TestDelete_AndVerifyStats
