@@ -16,6 +16,7 @@
 | Nisrina Atiqah Dwiputri Ridzki | 5027231075 | **Area 3** | S4 Smoke Test + Notifikasi + S5 Rollback |
 |Hasan| 5027231073 | **QA Tester** | Status Check |
 |Farand Febriansyah| 5027231084 | **Area 3** | S4 Smoke Test + QA Support |
+|M. Abhinaya Al Faruqi| 50272231011| **Area 3** | S4 Smoke Test + QA Support |
 
 
 ---
