@@ -262,7 +262,7 @@ func TestRollbackStatusSimulation(t *testing.T) {
 	}
 }
 
-/ ── TestCreate_WithUnicodeTitle ─────────────────────────────────────────────
+// ── TestCreate_WithUnicodeTitle ─────────────────────────────────────────────
 
 func TestCreate_WithUnicodeTitle(t *testing.T) {
 	svc := newSvc()
@@ -329,7 +329,7 @@ func TestDelete_AndVerifyStats(t *testing.T) {
 
 	// Verify total tasks decreased by 1
 	if statsAfter.Total != statsBefore.Total-1 {
-		t.Errorf(
+		t.Errorf(x
 			"Total stats after delete = %d, want %d",
 			statsAfter.Total,
 			statsBefore.Total-1,
