@@ -207,11 +207,14 @@ taskflow-cicd/
 - [x] Image push ke GHCR dengan tag SHA
 - [x] Perbandingan ukuran image terdokumentasi
 
-### ✅ Area 3 — Smoke Test + Rollback (Nisrina)
+### ✅ Area 3 — Smoke Test + Rollback (Nisrina & Farand)
 - [x] Job smoke-test selesai
 - [x] Notifikasi Telegram + Slack sukses & gagal
 - [x] `make rollback` berfungsi
 - [x] Prosedur rollback terdokumentasi
+- [x] Menambahkan unit testing pada `service_test.go`
+- [x] Menambahkan `TestCreate_WithUnicodeTitle`
+- [x] Menambahkan `TestDelete_AndVerifyStats`
 
 ### 🔄 Area 4 — Security + Laporan (Riskiyatul)
 - [ ] gosec (SAST) diintegrasikan ke pipeline
