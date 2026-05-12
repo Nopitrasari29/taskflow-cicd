@@ -262,6 +262,81 @@ func TestRollbackStatusSimulation(t *testing.T) {
 	}
 }
 
+/ ── TestCreate_WithUnicodeTitle ─────────────────────────────────────────────
+
+func TestCreate_WithUnicodeTitle(t *testing.T) {
+	svc := newSvc()
+
+	unicodeTitle := "Learning Go 🚀 日本語 العربية"
+
+	task, err := svc.Create(model.CreateTaskRequest{
+		Title: unicodeTitle,
+	})
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	// Verify title is stored correctly
+	if task.Title != unicodeTitle {
+		t.Errorf("Title = %q, want %q", task.Title, unicodeTitle)
+	}
+
+	// Verify generated ID is not empty
+	if task.ID == "" {
+		t.Error("Task ID should not be empty")
+	}
+}
+
+// ── TestDelete_AndVerifyStats ──────────────────────────────────────────────
+
+func TestDelete_AndVerifyStats(t *testing.T) {
+	svc := newSvc()
+
+	// Create first task
+	task1, err := svc.Create(model.CreateTaskRequest{
+		Title: "Task 1",
+	})
+	if err != nil {
+		t.Fatalf("Create() task1 error = %v", err)
+	}
+
+	// Create second task
+	_, err = svc.Create(model.CreateTaskRequest{
+		Title: "Task 2",
+	})
+	if err != nil {
+		t.Fatalf("Create() task2 error = %v", err)
+	}
+
+	// Get stats before delete
+	statsBefore, err := svc.GetStats()
+	if err != nil {
+		t.Fatalf("GetStats() before delete error = %v", err)
+	}
+
+	// Delete one task
+	_, err = svc.Delete(task1.ID)
+	if err != nil {
+		t.Fatalf("Delete() error = %v", err)
+	}
+
+	// Get stats after delete
+	statsAfter, err := svc.GetStats()
+	if err != nil {
+		t.Fatalf("GetStats() after delete error = %v", err)
+	}
+
+	// Verify total tasks decreased by 1
+	if statsAfter.Total != statsBefore.Total-1 {
+		t.Errorf(
+			"Total stats after delete = %d, want %d",
+			statsAfter.Total,
+			statsBefore.Total-1,
+		)
+	}
+}
+
 // ── [TODO] Tambahkan test berikut ─────────────────────────────────────────────
 // TODO mahasiswa:
 // - TestGetAll_WithStatusFilter (setelah bug #2 diperbaiki)
