@@ -15,6 +15,7 @@
 | Rafika Az Zahra Kusumastuti | 5027231050 | **Area 2** | S3 Docker Build + Push ke GHCR |
 | Nisrina Atiqah Dwiputri Ridzki | 5027231075 | **Area 3** | S4 Smoke Test + Notifikasi + S5 Rollback |
 |Hasan| 5027231073 | **QA Tester** | Status Check |
+|Farand Febriansyah| 5027231084 | **Area 3** | S4 Smoke Test + QA Support |
 
 
 ---
